@@ -81,14 +81,14 @@ class ReportController extends Controller
 
     public function show(Report $report)
     {
-        $this->authorize($report);
+        $this->ensureOwner($report);
         $report->load('connection');
         return view('report', compact('report'));
     }
 
     public function pdf(Report $report)
     {
-        $this->authorize($report);
+        $this->ensureOwner($report);
         $report->load('connection');
         $pdf = Pdf::loadView('report', compact('report'));
         return $pdf->download("{$report->type}-{$report->slug}.pdf");
@@ -97,7 +97,7 @@ class ReportController extends Controller
     /**
      * Owner-only access. Session connection_id must match report.connection_id.
      */
-    protected function authorize(Report $report): void
+    protected function ensureOwner(Report $report): void
     {
         $sid = session('connection_id');
         if (!$sid || (int)$sid !== (int)$report->connection_id) {
