@@ -29,6 +29,10 @@ h1{font-size:2.4rem;margin:.1em 0}
 .card h3{margin:0 0 .4em;color:#1a73e8;font-size:1.1rem}
 .card p{margin:0;font-size:.9rem;color:#555}
 .badge{display:inline-block;background:#f0f7ff;color:#1a73e8;font-size:.72rem;padding:3px 8px;border-radius:4px;margin-top:.7em}
+.card-cross{border-color:#d8b4ff;background:linear-gradient(135deg,#faf5ff 0%,#fff 100%)}
+.card-cross:hover{border-color:#7c3aed;box-shadow:0 4px 18px rgba(124,58,237,.14)}
+.card-cross h3{color:#7c3aed}
+.badge-cross{background:#f3e8ff;color:#7c3aed}
 .foot{margin-top:3em;color:#888;font-size:.88rem;text-align:center}
 </style>
 </head>
@@ -61,7 +65,35 @@ Try:
 </div>
 </div>
 
-<div class="divider">— or pick a preset report —</div>
+<div class="divider">— Cross-platform reports (GA4 + Search Console joined) —</div>
+
+<div class="grid">
+<a class="card card-cross" href="{{ route('start', 'silent_winners') }}">
+<h3>Silent Winners</h3>
+<p>Pages ranking well but barely clicked — or clicked but users bounce. Title &amp; intent gaps.</p>
+<span class="badge badge-cross">GA4 × GSC</span>
+</a>
+
+<a class="card card-cross" href="{{ route('start', 'converting_queries') }}">
+<h3>Converting Queries Slipping</h3>
+<p>Your revenue pages — are their Google rankings dropping? Money-weighted rank watch.</p>
+<span class="badge badge-cross">GA4 × GSC</span>
+</a>
+
+<a class="card card-cross" href="{{ route('start', 'cannibalization') }}">
+<h3>Cannibalization Detector</h3>
+<p>Queries where multiple of your URLs fight. GA4 tells you which one actually converts.</p>
+<span class="badge badge-cross">GA4 × GSC</span>
+</a>
+
+<a class="card card-cross" href="{{ route('start', 'brand_rescue') }}">
+<h3>Brand Rescue vs Real Growth</h3>
+<p>Is brand traffic masking non-brand decay? Split-adjusted growth truth.</p>
+<span class="badge badge-cross">GA4 × GSC</span>
+</a>
+</div>
+
+<div class="divider">— Single-source presets —</div>
 
 <div class="grid">
 <a class="card" href="{{ route('start', 'content_decay') }}">

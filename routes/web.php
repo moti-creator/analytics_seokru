@@ -18,6 +18,8 @@ Route::post('/generate', [ReportController::class, 'generate'])->name('generate'
 
 Route::get('/ask', [AskController::class, 'form'])->name('ask.form');
 Route::post('/ask', [AskController::class, 'run'])->name('ask.run');
+Route::post('/ask/saved', [AskController::class, 'saveQuery'])->name('ask.save');
+Route::delete('/ask/saved/{saved}', [AskController::class, 'deleteSaved'])->name('ask.saved.delete');
 
 Route::get('/r/{report:slug}', [ReportController::class, 'show'])->name('report.show');
 Route::get('/r/{report:slug}/pdf', [ReportController::class, 'pdf'])->name('report.pdf');
