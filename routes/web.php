@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AskController;
+use App\Http\Controllers\TelegramWebhookController;
 
 Route::get('/', [ReportController::class, 'landing']);
 Route::get('/start/{type}', [ReportController::class, 'start'])->name('start');
@@ -23,3 +24,6 @@ Route::delete('/ask/saved/{saved}', [AskController::class, 'deleteSaved'])->name
 
 Route::get('/r/{report:slug}', [ReportController::class, 'show'])->name('report.show');
 Route::get('/r/{report:slug}/pdf', [ReportController::class, 'pdf'])->name('report.pdf');
+
+// Telegram bot webhook — CSRF exempted via VerifyCsrfToken::$except
+Route::post('/webhooks/telegram', [TelegramWebhookController::class, 'handle'])->name('webhook.telegram');
