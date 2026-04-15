@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\Connection;
 
@@ -38,6 +39,9 @@ class AuthController extends Controller
 
         session(['connection_id' => $conn->id]);
 
+        // Remember cookie — 30 days — restore session across browser restarts.
+        Cookie::queue('remember_connection', (string) $conn->id, 60 * 24 * 30);
+
         // Route back based on intent stored before OAuth.
         $type = session('report_type');
         if ($type === 'ask') return redirect()->route('ask.form');
@@ -48,6 +52,8 @@ class AuthController extends Controller
     {
         $r->session()->forget('connection_id');
         $r->session()->forget('report_type');
+        $r->session()->forget('pending_prompt');
+        Cookie::queue(Cookie::forget('remember_connection'));
         return redirect('/');
     }
 }

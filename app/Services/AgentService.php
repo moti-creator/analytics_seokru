@@ -55,18 +55,39 @@ class AgentService
             }
 
             // Final text response
-            $narrative = $part['text'] ?? '<p>Agent returned no narrative.</p>';
+            $text = $part['text'] ?? '';
+            if (trim(strip_tags($text)) === '') {
+                Log::warning('Agent empty narrative', [
+                    'prompt' => $userPrompt,
+                    'raw_response' => $resp,
+                    'tool_calls' => $toolCalls,
+                ]);
+                $finish = $resp['candidates'][0]['finishReason'] ?? 'unknown';
+                $safety = $resp['candidates'][0]['safetyRatings'] ?? [];
+                $narrative = '<p class="error-narrative">Agent returned no narrative (finishReason: ' . e($finish) . ').</p>';
+                if ($safety) {
+                    $narrative .= '<p><strong>Safety:</strong> <code>' . e(json_encode($safety)) . '</code></p>';
+                }
+                $narrative .= '<p>You can retry — sometimes the model stalls mid-stream.</p>';
+                return [
+                    'narrative' => $narrative,
+                    'tool_calls' => $toolCalls,
+                    'iterations' => $i + 1,
+                    'error' => true,
+                ];
+            }
             return [
-                'narrative' => $narrative,
+                'narrative' => $text,
                 'tool_calls' => $toolCalls,
                 'iterations' => $i + 1,
             ];
         }
 
         return [
-            'narrative' => '<p>Agent exceeded max iterations without finalizing. Tool call log below.</p>',
+            'narrative' => '<p class="error-narrative">Agent exceeded max iterations without finalizing. Tool call log below.</p>',
             'tool_calls' => $toolCalls,
             'iterations' => self::MAX_ITERATIONS,
+            'error' => true,
         ];
     }
 
@@ -100,6 +121,7 @@ class AgentService
                 'ga4_query' => $this->ga4Query($google, $args),
                 'gsc_query' => $this->gscQuery($google, $args),
                 'today_date' => ['today' => now()->toDateString()],
+                'make_chart' => $this->makeChart($args),
                 default => ['error' => "Unknown tool: $fn"],
             };
         } catch (\Throwable $e) {
@@ -178,6 +200,43 @@ class AgentService
         return ['headers' => $headers, 'rows' => $rows, 'row_count' => count($rows)];
     }
 
+    /**
+     * Build a QuickChart.io URL for the agent to embed as <img src="...">.
+     * Accepts type (bar|line|pie|doughnut), labels[], datasets[{label,data}], title.
+     */
+    protected function makeChart(array $args): array
+    {
+        $type = $args['type'] ?? 'bar';
+        $labels = $args['labels'] ?? [];
+        $datasets = $args['datasets'] ?? [];
+        $title = $args['title'] ?? '';
+
+        if (!in_array($type, ['bar', 'line', 'pie', 'doughnut'])) {
+            return ['error' => 'Unsupported chart type. Use bar|line|pie|doughnut.'];
+        }
+        if (!$labels || !$datasets) {
+            return ['error' => 'labels and datasets required.'];
+        }
+
+        $config = [
+            'type' => $type,
+            'data' => ['labels' => $labels, 'datasets' => $datasets],
+            'options' => [
+                'title' => ['display' => (bool)$title, 'text' => $title],
+                'plugins' => ['legend' => ['display' => count($datasets) > 1]],
+            ],
+        ];
+
+        $url = 'https://quickchart.io/chart?w=600&h=320&bkg=white&c=' . rawurlencode(json_encode($config));
+        $imgTag = '<img src="' . $url . '" alt="' . e($title ?: 'chart') . '" style="max-width:100%;height:auto;margin:1em 0">';
+
+        return [
+            'chart_url' => $url,
+            'embed_html' => $imgTag,
+            'instruction' => 'Paste the embed_html into your final HTML report where the chart should appear.',
+        ];
+    }
+
     protected function summarize(array $result): string
     {
         if (isset($result['error'])) return 'error: ' . $result['error'];
@@ -201,6 +260,7 @@ Rules:
 - Compute deltas yourself from actual numbers. Do not invent numbers.
 - Be specific, concise, plain English. No fluff.
 - End with 2-3 actionable recommendations when relevant.
+- When a chart would clarify trends or comparisons, call make_chart and embed the returned embed_html in your report. Use charts sparingly (0-2 per report).
 
 GA4 dimensions: date, pagePath, landingPage, sessionSource, sessionMedium, sessionSourceMedium, deviceCategory, country, city, browser, sessionDefaultChannelGroup, firstUserSource.
 GA4 metrics: sessions, totalUsers, newUsers, screenPageViews, conversions, engagementRate, bounceRate, averageSessionDuration, eventCount.
@@ -241,6 +301,30 @@ PROMPT;
                         'date_end' => ['type' => 'string', 'description' => 'YYYY-MM-DD'],
                         'limit' => ['type' => 'integer', 'description' => 'Max rows (default 25, max 500).'],
                     ],
+                ],
+            ],
+            [
+                'name' => 'make_chart',
+                'description' => 'Build a chart image URL (QuickChart.io). Returns embed_html to paste into the final report.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'type' => ['type' => 'string', 'description' => 'bar | line | pie | doughnut'],
+                        'title' => ['type' => 'string'],
+                        'labels' => ['type' => 'array', 'items' => ['type' => 'string'], 'description' => 'X-axis labels or slice names.'],
+                        'datasets' => [
+                            'type' => 'array',
+                            'description' => 'Array of {label, data:[numbers]}.',
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'label' => ['type' => 'string'],
+                                    'data' => ['type' => 'array', 'items' => ['type' => 'number']],
+                                ],
+                            ],
+                        ],
+                    ],
+                    'required' => ['type', 'labels', 'datasets'],
                 ],
             ],
             [

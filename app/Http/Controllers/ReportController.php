@@ -19,6 +19,20 @@ class ReportController extends Controller
         ]);
     }
 
+    /**
+     * Hero textbox handler. Save prompt, then jump to ask flow (OAuth if needed).
+     */
+    public function askStart(Request $r)
+    {
+        $r->validate(['prompt' => 'required|string|max:2000']);
+        session(['pending_prompt' => $r->prompt, 'report_type' => 'ask']);
+
+        if (session('connection_id') && Connection::find(session('connection_id'))) {
+            return redirect()->route('ask.form');
+        }
+        return redirect('/auth/google');
+    }
+
     public function start(string $type)
     {
         abort_unless($type === 'ask' || isset(ReportBuilder::TYPES[$type]), 404);

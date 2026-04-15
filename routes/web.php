@@ -7,6 +7,7 @@ use App\Http\Controllers\AskController;
 
 Route::get('/', [ReportController::class, 'landing']);
 Route::get('/start/{type}', [ReportController::class, 'start'])->name('start');
+Route::post('/ask/start', [ReportController::class, 'askStart'])->name('ask.start');
 
 Route::get('/auth/google', [AuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [AuthController::class, 'callback']);

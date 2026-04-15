@@ -44,7 +44,8 @@ button:disabled{background:#888;cursor:wait}
 </select>
 
 <label>Your question</label>
-<textarea name="prompt" required placeholder="e.g. Top landing pages last 7 days, sorted by sessions, with conversion rate"></textarea>
+<textarea name="prompt" required placeholder="e.g. Top landing pages last 7 days, sorted by sessions, with conversion rate">{{ session('pending_prompt', '') }}</textarea>
+@php session()->forget('pending_prompt'); @endphp
 
 <div class="examples">
 <p onclick="fillPrompt(this)">Top 20 landing pages last 30 days with sessions and conversion rate</p>
