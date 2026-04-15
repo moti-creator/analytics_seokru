@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReportController;
 
-Route::get('/', fn() => view('landing'));
+Route::get('/', [ReportController::class, 'landing']);
+Route::get('/start/{type}', [ReportController::class, 'start'])->name('start');
 
 Route::get('/auth/google', [AuthController::class, 'redirect']);
 Route::get('/auth/google/callback', [AuthController::class, 'callback']);

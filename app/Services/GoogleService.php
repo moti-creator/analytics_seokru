@@ -38,6 +38,11 @@ class GoogleService
         return $this->client()->getAccessToken()['access_token'];
     }
 
+    public function publicToken(): string
+    {
+        return $this->token();
+    }
+
     public function listGa4Properties(): array
     {
         $accounts = Http::withToken($this->token())
