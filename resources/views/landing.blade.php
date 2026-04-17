@@ -12,18 +12,24 @@ body{font-family:system-ui,sans-serif;max-width:960px;margin:0 auto;padding:20px
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #eee;margin-bottom:1.5em;flex-wrap:wrap;gap:10px}
 .topbar .brand{font-weight:700;color:#1a73e8;font-size:1.15rem}
 .topbar .right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.topbar select{padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:.85rem;max-width:220px}
 .btn-connect{display:inline-block;background:#1a73e8;color:#fff;padding:8px 20px;border-radius:6px;text-decoration:none;font-weight:600;font-size:.9rem}
 .btn-connect:hover{background:#1557b8}
+.btn-connect-lg{padding:14px 36px;font-size:1.1rem;border-radius:10px}
 .btn-sm{padding:6px 14px;border:1px solid #ddd;border-radius:6px;cursor:pointer;color:#555;font-size:.85rem;background:#fff;text-decoration:none}
 .btn-sm:hover{border-color:#1a73e8;color:#1a73e8}
 .step-badge{display:inline-block;background:#fef3c7;color:#92400e;font-size:.75rem;padding:3px 8px;border-radius:4px;font-weight:600}
 
+/* Property selector — prominent centered box */
+.property-picker{background:linear-gradient(135deg,#fffbeb 0%,#fef3c7 100%);border:2px solid #f59e0b;border-radius:14px;padding:24px 28px;margin-bottom:2em;text-align:center}
+.property-picker h2{margin:0 0 .4em;font-size:1.15rem;color:#92400e}
+.property-picker p{margin:0 0 1em;color:#78716c;font-size:.9rem}
+.property-picker .selects{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.property-picker select{padding:10px 16px;border:2px solid #f59e0b;border-radius:8px;font-size:.95rem;min-width:240px;background:#fff;color:#222;cursor:pointer}
+.property-picker select:focus{outline:none;border-color:#d97706;box-shadow:0 0 0 3px rgba(245,158,11,.2)}
+
 /* Status bar */
 .status{background:#f5f8ff;border:1px solid #d8e4ff;border-radius:8px;padding:10px 16px;margin-bottom:1.5em;font-size:.88rem;color:#555;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .status code{background:#e8f0fe;padding:2px 6px;border-radius:3px;font-size:.82rem}
-.status .warn{color:#c00}
-.status-not-connected{background:#fff7ed;border-color:#fed7aa}
 
 /* Hero */
 h1{font-size:2rem;margin:.1em 0 .15em}
@@ -36,8 +42,11 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 .hero button{background:#1a73e8;color:#fff;border:0;padding:10px 22px;border-radius:8px;font-size:.95rem;cursor:pointer;font-weight:500}
 .hero button:hover{background:#1557b8}
 .hero-disabled textarea{opacity:.7}
-.hero-gate{display:flex;align-items:center;gap:10px;margin-top:12px}
-.hero-gate .gate-msg{color:#555;font-size:.9rem}
+
+/* Connect CTA — centered prominent box */
+.connect-cta{text-align:center;background:linear-gradient(135deg,#f5f8ff 0%,#eef3ff 100%);border:2px solid #1a73e8;border-radius:14px;padding:32px;margin-bottom:2em}
+.connect-cta h2{margin:0 0 .3em;color:#1a73e8;font-size:1.2rem}
+.connect-cta p{margin:0 0 1.2em;color:#666;font-size:.95rem}
 
 /* Cards */
 .divider{text-align:center;color:#999;font-size:.82rem;margin:1.5em 0 1em;text-transform:uppercase;letter-spacing:.1em}
@@ -51,7 +60,7 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 .card-cross:hover{border-color:#7c3aed;box-shadow:0 4px 18px rgba(124,58,237,.14)}
 .card-cross h3{color:#7c3aed}
 .badge-cross{background:#f3e8ff;color:#7c3aed}
-.card-gated{opacity:.65;pointer-events:none;position:relative}
+.card-gated{opacity:.55;pointer-events:none;position:relative}
 .card-gated:hover{transform:none;box-shadow:none}
 
 /* Recent */
@@ -74,55 +83,73 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 <div class="brand">SEOKRU Analytics</div>
 <div class="right">
 @if($conn)
-    {{-- Property selectors --}}
-    <form method="post" action="{{ route('dashboard.property') }}" id="propForm" style="display:flex;gap:6px;align-items:center;margin:0">
+    <span style="color:#555;font-size:.85rem">{{ $conn->email }}</span>
+    <form method="post" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" class="btn-sm">Log out</button></form>
+@endif
+</div>
+</div>
+
+{{-- ============ HERO ============ --}}
+<h1>GA4 + Search Console in one plain-English report.</h1>
+<p class="sub">Ask any question. Or pick a preset. 60 seconds.</p>
+
+{{-- ============ STATE 1: NOT CONNECTED ============ --}}
+@if(!$conn)
+<div class="connect-cta">
+    <h2>Step 1 — Connect your Google account</h2>
+    <p>We'll read your GA4 + Search Console data (read-only) and answer questions in plain English.</p>
+    <a href="/auth/google" class="btn-connect btn-connect-lg">Connect Google →</a>
+</div>
+
+{{-- ============ STATE 2: CONNECTED, NO PROPERTY ============ --}}
+@elseif(!$hasProperty)
+<div class="property-picker">
+    <h2>Step 2 — Choose your site</h2>
+    <p>Select a GA4 property or Search Console site to unlock all reports.</p>
+    <form method="post" action="{{ route('dashboard.property') }}" id="propForm">
     @csrf
+    <div class="selects">
     <select name="ga4_property_id" onchange="document.getElementById('propForm').submit()">
-    <option value="">GA4: none</option>
+    <option value="">— Select GA4 property —</option>
     @foreach($properties as $p)
     <option value="{{ $p['id'] }}" @if($conn->ga4_property_id === $p['id']) selected @endif>{{ $p['name'] }}</option>
     @endforeach
     </select>
     <select name="gsc_site_url" onchange="document.getElementById('propForm').submit()">
+    <option value="">— Select Search Console site —</option>
+    @foreach($sites as $s)
+    <option value="{{ $s['url'] }}" @if($conn->gsc_site_url === $s['url']) selected @endif>{{ $s['url'] }}</option>
+    @endforeach
+    </select>
+    </div>
+    </form>
+</div>
+
+{{-- ============ STATE 3: READY — ASK ANYTHING ============ --}}
+@else
+<div class="status">
+    <span>
+    @if($conn->ga4_property_id) GA4: <code>{{ $conn->ga4_property_id }}</code> @endif
+    @if($conn->gsc_site_url) · GSC: <code>{{ $conn->gsc_site_url }}</code> @endif
+    </span>
+    <form method="post" action="{{ route('dashboard.property') }}" id="propForm" style="display:flex;gap:6px;align-items:center;margin:0">
+    @csrf
+    <select name="ga4_property_id" onchange="document.getElementById('propForm').submit()" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:.8rem">
+    <option value="">GA4: none</option>
+    @foreach($properties as $p)
+    <option value="{{ $p['id'] }}" @if($conn->ga4_property_id === $p['id']) selected @endif>{{ $p['name'] }}</option>
+    @endforeach
+    </select>
+    <select name="gsc_site_url" onchange="document.getElementById('propForm').submit()" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:.8rem">
     <option value="">GSC: none</option>
     @foreach($sites as $s)
     <option value="{{ $s['url'] }}" @if($conn->gsc_site_url === $s['url']) selected @endif>{{ $s['url'] }}</option>
     @endforeach
     </select>
     </form>
-    <form method="post" action="{{ route('logout') }}" style="margin:0">@csrf<button type="submit" class="btn-sm">Log out</button></form>
-@else
-    <a href="/auth/google" class="btn-connect">Connect Google →</a>
-@endif
-</div>
 </div>
 
-{{-- ============ STATUS BAR ============ --}}
-@if(!$conn)
-<div class="status status-not-connected">
-    <span><span class="step-badge">Step 1</span> Connect your Google account to get started.</span>
-    <a href="/auth/google" class="btn-connect" style="font-size:.82rem;padding:6px 14px">Connect Google</a>
-</div>
-@elseif(!$hasProperty)
-<div class="status" style="background:#fffbeb;border-color:#fde68a">
-    <span><span class="step-badge">Step 2</span> Select a GA4 property or Search Console site above to unlock reports.</span>
-</div>
-@else
-<div class="status">
-    <span>
-    {{ $conn->email }}
-    @if($conn->ga4_property_id) · GA4: <code>{{ $conn->ga4_property_id }}</code> @endif
-    @if($conn->gsc_site_url) · GSC: <code>{{ $conn->gsc_site_url }}</code> @endif
-    </span>
-</div>
-@endif
-
-{{-- ============ HERO ============ --}}
-<h1>GA4 + Search Console in one plain-English report.</h1>
-<p class="sub">Ask any question. Or pick a preset. 60 seconds.</p>
-
-<div class="hero @if(!$hasProperty) hero-disabled @endif">
-@if($hasProperty)
+<div class="hero">
     <form method="post" action="{{ route('ask.start') }}">
     @csrf
     <textarea name="prompt" placeholder="e.g. Which blog posts lost the most organic traffic last month, and why? Compare mobile vs desktop conversion. Show my top 10 keywords by impressions." required></textarea>
@@ -131,19 +158,8 @@ h1{font-size:2rem;margin:.1em 0 .15em}
     <button type="submit">Ask →</button>
     </div>
     </form>
-@elseif($conn)
-    <textarea placeholder="e.g. Which blog posts lost the most organic traffic last month?" disabled style="cursor:not-allowed"></textarea>
-    <div class="hero-gate">
-    <span class="step-badge">Step 2</span>
-    <span class="gate-msg">Select a property above to start asking questions.</span>
-    </div>
-@else
-    <textarea placeholder="e.g. Which blog posts lost the most organic traffic last month?" disabled style="cursor:not-allowed"></textarea>
-    <div class="hero-gate">
-    <a href="/auth/google" class="btn-connect">Connect Google to start →</a>
-    </div>
-@endif
 </div>
+@endif
 
 {{-- ============ CROSS-PLATFORM CARDS ============ --}}
 <div class="divider">— Cross-platform reports (GA4 × Search Console) —</div>

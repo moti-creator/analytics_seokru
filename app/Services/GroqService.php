@@ -16,8 +16,8 @@ class GroqService
 
     public function __construct()
     {
-        $this->key = config('services.groq.key', '');
-        $this->model = config('services.groq.model', 'llama-3.3-70b-versatile');
+        $this->key = config('services.groq.key') ?? '';
+        $this->model = config('services.groq.model') ?? 'llama-3.3-70b-versatile';
     }
 
     public function available(): bool
