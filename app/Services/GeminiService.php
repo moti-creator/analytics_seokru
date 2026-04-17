@@ -9,6 +9,12 @@ class GeminiService
 {
     public function raw(string $prompt): string
     {
+        // Prefer Groq (faster, higher free tier). Fall back to Gemini if no key.
+        $groq = new GroqService();
+        if ($groq->available()) {
+            return $groq->raw($prompt);
+        }
+
         $model = config('services.gemini.model');
         $key = config('services.gemini.key');
 
@@ -17,23 +23,8 @@ class GeminiService
             ['contents' => [['parts' => [['text' => $prompt]]]]]
         );
 
-        // Rate limit hit → fall back to Groq
-        if ($resp->status() === 429) {
-            Log::info('Gemini 429 → falling back to Groq');
-            return $this->groqFallback($prompt);
-        }
-
         $json = $resp->json();
-        return $json['candidates'][0]['content']['parts'][0]['text'] ?? $this->groqFallback($prompt);
-    }
-
-    protected function groqFallback(string $prompt): string
-    {
-        $groq = new GroqService();
-        if (!$groq->available()) {
-            return '<p>Report generation failed (rate limit hit, no fallback configured).</p>';
-        }
-        return $groq->raw($prompt);
+        return $json['candidates'][0]['content']['parts'][0]['text'] ?? '<p>Report generation failed.</p>';
     }
 
     public function narrate(array $metrics): string

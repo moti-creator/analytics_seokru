@@ -16,13 +16,19 @@ class AgentService
 {
     protected const MAX_ITERATIONS = 8;
 
-    /** @var 'gemini'|'groq' */
-    protected string $backend = 'gemini';
+    /** @var 'gemini'|'groq' — Groq preferred (faster, higher free tier) */
+    protected string $backend;
+
+    protected function pickBackend(): string
+    {
+        return (new GroqService())->available() ? 'groq' : 'gemini';
+    }
 
     public function __construct(public Connection $conn) {}
 
     public function run(string $userPrompt): array
     {
+        $this->backend = $this->pickBackend();
         $google = new GoogleService($this->conn);
         $toolCalls = [];
         $systemPrompt = $this->systemPrompt();
