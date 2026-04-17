@@ -78,11 +78,8 @@ class AuthController extends Controller
         $type = session('report_type');
         if ($type === 'ask') return redirect()->route('ask.form');
 
-        // If user already has property, go to dashboard. Else connect (pick property).
-        if ($conn->ga4_property_id || $conn->gsc_site_url) {
-            return redirect()->route('dashboard');
-        }
-        return redirect()->route('connect');
+        // Go home — landing handles all states (property select, dashboard, etc.)
+        return redirect('/');
     }
 
     public function logout(Request $r)

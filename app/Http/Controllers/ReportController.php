@@ -14,15 +14,31 @@ class ReportController extends Controller
     public function landing()
     {
         $conn = session('connection_id') ? Connection::find(session('connection_id')) : null;
+        $properties = [];
+        $sites = [];
+        $recent = collect();
 
-        // Already connected + has property? Go to dashboard.
-        if ($conn && ($conn->ga4_property_id || $conn->gsc_site_url)) {
-            return redirect()->route('dashboard');
+        if ($conn) {
+            try {
+                $g = new GoogleService($conn);
+                $properties = $g->listGa4Properties();
+                $sites = $g->listGscSites();
+            } catch (\Throwable $e) {}
+
+            $recent = Report::where('connection_id', $conn->id)
+                ->latest()->take(5)
+                ->get(['id', 'slug', 'type', 'title', 'created_at']);
         }
 
+        $hasProperty = $conn && ($conn->ga4_property_id || $conn->gsc_site_url);
+
         return view('landing', [
+            'conn' => $conn,
+            'hasProperty' => $hasProperty,
+            'properties' => $properties,
+            'sites' => $sites,
             'types' => ReportBuilder::TYPES,
-            'connection_id' => session('connection_id'),
+            'recent' => $recent,
         ]);
     }
 
@@ -86,28 +102,11 @@ class ReportController extends Controller
     }
 
     /**
-     * Dashboard: property in top bar, all report types as cards, ask textbox.
+     * Dashboard redirects to landing — single unified page handles all states.
      */
     public function dashboard()
     {
-        $conn = Connection::find(session('connection_id'));
-        if (!$conn) return redirect('/');
-
-        $g = new GoogleService($conn);
-        $properties = $g->listGa4Properties();
-        $sites = $g->listGscSites();
-
-        $recent = Report::where('connection_id', $conn->id)
-            ->latest()->take(5)
-            ->get(['id', 'slug', 'type', 'title', 'created_at']);
-
-        return view('dashboard', [
-            'conn' => $conn,
-            'types' => ReportBuilder::TYPES,
-            'properties' => $properties,
-            'sites' => $sites,
-            'recent' => $recent,
-        ]);
+        return redirect('/');
     }
 
     /**
