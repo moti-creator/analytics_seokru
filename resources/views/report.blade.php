@@ -31,7 +31,24 @@ th{background:#f5f8ff}
 .past-list a:hover{text-decoration:underline}
 .past-list .past-date{color:#999;font-size:.8rem}
 .past-list .past-type{background:#f0f7ff;color:#1a73e8;font-size:.72rem;padding:2px 6px;border-radius:3px;margin-left:6px}
-</style></head>
+</style>
+@if(($isPdf ?? false) && $report->type === 'keyword_rankings')
+<style>
+@page { size: A4 landscape; margin: 6mm; }
+body { max-width: 100% !important; margin: 0 !important; padding: 0 !important; font-size: 9pt; }
+h1 { font-size: 13pt; margin: 0 0 2mm !important; padding-bottom: 2mm !important }
+.meta { font-size: 8pt; margin-bottom: 2mm !important }
+.btn, .cta, .past-reports, .retry-box { display: none !important; }
+.kr-summary, .kr-filter { display: none !important; }
+.kr-scroll { max-height: none !important; overflow: visible !important; border: 0 !important; }
+.kr-pivot { font-size: 6.5pt !important; width: 100% !important; }
+.kr-pivot th, .kr-pivot td { padding: 1px 3px !important; }
+.kr-pivot thead th.q, .kr-pivot tbody td.q { min-width: 0 !important; max-width: 90mm !important; position: static !important; }
+.kr-pivot thead th { position: static !important; }
+.kr-pivot tbody td.q { position: static !important; }
+</style>
+@endif
+</head>
 <body>
 <h1>{{ $report->title ?? 'Analytics Report' }}</h1>
 <p class="meta">

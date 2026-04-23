@@ -142,7 +142,7 @@ class GoogleService
      *   rows: [['query' => ..., 'totalImpressions' => ..., 'totalClicks' => ...,
      *           'months' => ['25-04' => ['position' => 5.2, 'impressions' => 300], ...]], ...]
      */
-    public function fetchGscQueryPivot(string $siteUrl, string $start, string $end, int $minImpressions = 10, int $topN = 50): array
+    public function fetchGscQueryPivot(string $siteUrl, string $start, string $end, int $minImpressions = 10, int $topN = 50, string $searchType = 'web'): array
     {
         $url = 'https://www.googleapis.com/webmasters/v3/sites/' . urlencode($siteUrl) . '/searchAnalytics/query';
 
@@ -155,6 +155,7 @@ class GoogleService
                 ->post($url, [
                     'startDate' => $start, 'endDate' => $end,
                     'dimensions' => ['query', 'date'],
+                    'type' => $searchType, // 'web' excludes news/image/video SERPs
                     'rowLimit' => $pageSize,
                     'startRow' => $startRow,
                     'dataState' => 'all',

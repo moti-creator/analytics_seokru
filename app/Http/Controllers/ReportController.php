@@ -190,7 +190,10 @@ class ReportController extends Controller
     {
         $this->ensureOwner($report);
         $report->load('connection');
-        $pdf = Pdf::loadView('report', compact('report'));
+        $pdf = Pdf::loadView('report', ['report' => $report, 'isPdf' => true]);
+        if ($report->type === 'keyword_rankings') {
+            $pdf->setPaper('a4', 'landscape');
+        }
         return $pdf->download("{$report->type}-{$report->slug}.pdf");
     }
 
