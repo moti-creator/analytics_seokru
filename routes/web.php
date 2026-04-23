@@ -7,6 +7,11 @@ use App\Http\Controllers\AskController;
 use App\Http\Controllers\TelegramWebhookController;
 
 Route::get('/', [ReportController::class, 'landing']);
+
+// Legal pages (required for Google OAuth verification)
+Route::view('/privacy', 'legal.privacy')->name('privacy');
+Route::view('/terms', 'legal.terms')->name('terms');
+Route::view('/about', 'legal.about')->name('about');
 Route::get('/start/{type}', [ReportController::class, 'start'])->name('start');
 Route::post('/ask/start', [ReportController::class, 'askStart'])->name('ask.start');
 

@@ -256,7 +256,12 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 </div>
 @endif
 
-<p class="foot">Free pilot — no credit card. GA4 + Search Console joined. Plain English.</p>
+<p class="foot">Free pilot — no credit card. GA4 + Search Console joined. Plain English.<br>
+<a href="/about" style="color:#1a73e8;text-decoration:none;margin:0 6px">About</a> ·
+<a href="/privacy" style="color:#1a73e8;text-decoration:none;margin:0 6px">Privacy</a> ·
+<a href="/terms" style="color:#1a73e8;text-decoration:none;margin:0 6px">Terms</a> ·
+<a href="mailto:info@seokru.com" style="color:#1a73e8;text-decoration:none;margin:0 6px">info@seokru.com</a>
+</p>
 
 </body>
 </html>
