@@ -132,5 +132,94 @@ class GoogleService
         return ['totals' => $totals, 'topQueries' => $topQueries, 'topPages' => $topPages];
     }
 
+    /**
+     * Query × month pivot for keyword rankings dashboard.
+     * Pulls query+date rows (paginated if needed), aggregates position weighted
+     * by impressions per query × YYYY-MM, ranks queries by total impressions desc.
+     *
+     * Returns:
+     *   months: ['25-04', '25-05', ...] ascending
+     *   rows: [['query' => ..., 'totalImpressions' => ..., 'totalClicks' => ...,
+     *           'months' => ['25-04' => ['position' => 5.2, 'impressions' => 300], ...]], ...]
+     */
+    public function fetchGscQueryPivot(string $siteUrl, string $start, string $end, int $minImpressions = 10, int $topN = 50): array
+    {
+        $url = 'https://www.googleapis.com/webmasters/v3/sites/' . urlencode($siteUrl) . '/searchAnalytics/query';
+
+        $all = [];
+        $startRow = 0;
+        $pageSize = 25000;
+        for ($i = 0; $i < 10; $i++) {
+            $res = Http::withToken($this->token())
+                ->timeout(60)
+                ->post($url, [
+                    'startDate' => $start, 'endDate' => $end,
+                    'dimensions' => ['query', 'date'],
+                    'rowLimit' => $pageSize,
+                    'startRow' => $startRow,
+                    'dataState' => 'all',
+                ])->json();
+            $rows = $res['rows'] ?? [];
+            if (empty($rows)) break;
+            $all = array_merge($all, $rows);
+            if (count($rows) < $pageSize) break;
+            $startRow += $pageSize;
+        }
+
+        // Build month list covering [start, end].
+        $months = [];
+        $cursor = \Carbon\Carbon::parse($start)->startOfMonth();
+        $last = \Carbon\Carbon::parse($end)->startOfMonth();
+        while ($cursor <= $last) {
+            $months[] = $cursor->format('y-m');
+            $cursor->addMonth();
+        }
+
+        // Aggregate per query × month.
+        $agg = [];
+        foreach ($all as $r) {
+            [$query, $date] = $r['keys'];
+            $ym = \Carbon\Carbon::parse($date)->format('y-m');
+            $imps = (int)($r['impressions'] ?? 0);
+            $clicks = (int)($r['clicks'] ?? 0);
+            $posSum = ($r['position'] ?? 0) * $imps; // impression-weighted
+            if (!isset($agg[$query])) {
+                $agg[$query] = ['query' => $query, 'totalImpressions' => 0, 'totalClicks' => 0, 'months' => []];
+            }
+            $q = &$agg[$query];
+            $q['totalImpressions'] += $imps;
+            $q['totalClicks'] += $clicks;
+            if (!isset($q['months'][$ym])) {
+                $q['months'][$ym] = ['impressions' => 0, 'posSum' => 0, 'clicks' => 0];
+            }
+            $q['months'][$ym]['impressions'] += $imps;
+            $q['months'][$ym]['posSum'] += $posSum;
+            $q['months'][$ym]['clicks'] += $clicks;
+            unset($q);
+        }
+
+        // Drop queries below threshold, compute per-month avg position.
+        $result = [];
+        foreach ($agg as $q) {
+            if ($q['totalImpressions'] < $minImpressions) continue;
+            $monthsOut = [];
+            foreach ($q['months'] as $ym => $m) {
+                $monthsOut[$ym] = [
+                    'position' => $m['impressions'] > 0 ? round($m['posSum'] / $m['impressions'], 2) : null,
+                    'impressions' => $m['impressions'],
+                    'clicks' => $m['clicks'],
+                ];
+            }
+            $q['months'] = $monthsOut;
+            $result[] = $q;
+        }
+
+        // Sort by total impressions desc, take top N.
+        usort($result, fn($a, $b) => $b['totalImpressions'] <=> $a['totalImpressions']);
+        $result = array_slice($result, 0, $topN);
+
+        return ['months' => $months, 'rows' => $result];
+    }
+
 }
 

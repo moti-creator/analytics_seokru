@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AskController;
+use App\Http\Controllers\RankingsController;
 use App\Http\Controllers\TelegramWebhookController;
 
 Route::get('/', [ReportController::class, 'landing']);
@@ -26,6 +27,9 @@ Route::get('/ask', [AskController::class, 'form'])->name('ask.form');
 Route::post('/ask', [AskController::class, 'run'])->name('ask.run');
 Route::post('/ask/saved', [AskController::class, 'saveQuery'])->name('ask.save');
 Route::delete('/ask/saved/{saved}', [AskController::class, 'deleteSaved'])->name('ask.saved.delete');
+
+Route::get('/rankings', [RankingsController::class, 'show'])->name('rankings');
+Route::get('/rankings.csv', [RankingsController::class, 'csv'])->name('rankings.csv');
 
 Route::get('/r/{report:slug}', [ReportController::class, 'show'])->name('report.show');
 Route::get('/r/{report:slug}/pdf', [ReportController::class, 'pdf'])->name('report.pdf');

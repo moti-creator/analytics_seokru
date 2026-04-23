@@ -161,6 +161,18 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 </div>
 @endif
 
+@php $gscReady = $conn && $conn->gsc_site_url; @endphp
+
+{{-- ============ LIVE DASHBOARDS ============ --}}
+<div class="divider">— Live dashboards —</div>
+<div class="grid">
+<a class="card card-cross @if(!$gscReady) card-gated @endif" href="{{ $gscReady ? route('rankings') : '#' }}">
+<h3>Keyword Rankings Pivot</h3>
+<p>Query × month heatmap. Top 50 keywords by impressions, 13 months. Filter, search, export CSV.</p>
+<span class="badge badge-cross">Search Console · Live</span>
+</a>
+</div>
+
 {{-- ============ CROSS-PLATFORM CARDS ============ --}}
 <div class="divider">— Cross-platform reports (GA4 × Search Console) —</div>
 <div class="grid">
