@@ -31,9 +31,9 @@ Go to: https://console.cloud.google.com/apis/credentials/consent
 | **User support email** | info@seokru.com |
 | **App logo** | Upload 120×120 PNG (see §Logo below) |
 | **App domain — homepage** | https://analytics.seokru.com |
-| **App domain — privacy** | https://analytics.seokru.com/privacy |
-| **App domain — terms** | https://analytics.seokru.com/terms |
-| **Authorized domains** | `seokru.com` |
+| **App domain — privacy** | https://www.seokru.com/privacy (after pasting PART A from PRIVACY_ADDENDUM.md) |
+| **App domain — terms** | https://www.seokru.com/terms (after pasting PART B from PRIVACY_ADDENDUM.md) |
+| **Authorized domains** | `seokru.com` (covers both www. and analytics. subdomains) |
 | **Developer contact email** | info@seokru.com |
 
 ### Logo
