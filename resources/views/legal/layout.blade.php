@@ -33,15 +33,15 @@ code{background:#f0f0f0;padding:2px 5px;border-radius:3px;font-size:.88rem;word-
 <a href="/" class="brand">SEOKRU Analytics</a>
 <div>
 <a href="/about">About</a>
-<a href="/privacy">Privacy</a>
-<a href="/terms">Terms</a>
+<a href="https://www.seokru.com/legal/privacy/">Privacy</a>
+<a href="https://www.seokru.com/legal/terms/">Terms</a>
 </div>
 </div>
 
 @yield('content')
 
 <div class="foot">
-<a href="/">Home</a> · <a href="/about">About</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a>
+<a href="/">Home</a> · <a href="/about">About</a> · <a href="https://www.seokru.com/legal/privacy/">Privacy</a> · <a href="https://www.seokru.com/legal/terms/">Terms</a>
 <p>SEOKRU Analytics · operated by SEOKRU · <a href="mailto:info@seokru.com">info@seokru.com</a></p>
 </div>
 
