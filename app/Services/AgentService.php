@@ -21,6 +21,10 @@ class AgentService
 
     protected function pickBackend(): string
     {
+        // Gemini first — Groq free tier TPM (12k/min) is too small for agent workflows
+        // with multiple tool calls. Fall back to Groq only if Gemini has no key.
+        $gemini = config('services.gemini.key');
+        if ($gemini) return 'gemini';
         return (new GroqService())->available() ? 'groq' : 'gemini';
     }
 
