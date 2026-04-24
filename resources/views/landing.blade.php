@@ -258,8 +258,8 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 
 <p class="foot">Free pilot — no credit card. GA4 + Search Console joined. Plain English.<br>
 <a href="/about" style="color:#1a73e8;text-decoration:none;margin:0 6px">About</a> ·
-<a href="/privacy" style="color:#1a73e8;text-decoration:none;margin:0 6px">Privacy Policy</a> ·
-<a href="/terms" style="color:#1a73e8;text-decoration:none;margin:0 6px">Terms of Service</a> ·
+<a href="https://www.seokru.com/legal/privacy/" style="color:#1a73e8;text-decoration:none;margin:0 6px">Privacy Policy</a> ·
+<a href="https://www.seokru.com/legal/terms/" style="color:#1a73e8;text-decoration:none;margin:0 6px">Terms of Service</a> ·
 <a href="mailto:info@seokru.com" style="color:#1a73e8;text-decoration:none;margin:0 6px">info@seokru.com</a>
 </p>
 
