@@ -142,6 +142,6 @@ Request weekly delivery →
 </ul>
 </div>
 @endif
-
+@include('partials.footer')
 </body>
 </html>

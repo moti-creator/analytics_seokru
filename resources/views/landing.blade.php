@@ -131,27 +131,43 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 
 {{-- ============ STATE 3: READY — ASK ANYTHING ============ --}}
 @else
-<div class="status">
-    <span>
-    @if($conn->ga4_property_id) GA4: <code>{{ $conn->ga4_property_id }}</code> @endif
-    @if($conn->gsc_site_url) · GSC: <code>{{ $conn->gsc_site_url }}</code> @endif
-    </span>
-    <form method="post" action="{{ route('dashboard.property') }}" id="propForm" style="display:flex;gap:6px;align-items:center;margin:0">
-    @csrf
-    <select name="ga4_property_id" onchange="document.getElementById('propForm').submit()" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:.8rem">
-    <option value="">GA4: none</option>
-    @foreach($properties as $p)
-    <option value="{{ $p['id'] }}" @if($conn->ga4_property_id === $p['id']) selected @endif>{{ $p['name'] }}</option>
-    @endforeach
-    </select>
-    <select name="gsc_site_url" onchange="document.getElementById('propForm').submit()" style="padding:4px 8px;border:1px solid #ddd;border-radius:4px;font-size:.8rem">
-    <option value="">GSC: none</option>
-    @foreach($sites as $s)
-    <option value="{{ $s['url'] }}" @if($conn->gsc_site_url === $s['url']) selected @endif>{{ $s['url'] }}</option>
-    @endforeach
-    </select>
-    </form>
-</div>
+<style>
+.prop-switch{display:flex;gap:12px;align-items:stretch;margin-bottom:1.5em;flex-wrap:wrap}
+.prop-pick{flex:1;min-width:240px;display:flex;flex-direction:column;gap:4px;padding:10px 14px;border-radius:10px;border:2px solid transparent;transition:all .2s;position:relative;overflow:hidden}
+.prop-pick.ga4{background:#eef3ff;border-color:#c7d7ff}
+.prop-pick.ga4:hover{background:#dce7ff;border-color:#1a73e8;box-shadow:0 4px 14px rgba(26,115,232,.18)}
+.prop-pick.gsc{background:#f3eaff;border-color:#d8b4ff}
+.prop-pick.gsc:hover{background:#ebdbff;border-color:#7c3aed;box-shadow:0 4px 14px rgba(124,58,237,.18)}
+.prop-lbl{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.prop-pick.ga4 .prop-lbl{color:#1a73e8}
+.prop-pick.gsc .prop-lbl{color:#7c3aed}
+.prop-lbl .dot{width:8px;height:8px;border-radius:50%}
+.prop-pick.ga4 .dot{background:#1a73e8}
+.prop-pick.gsc .dot{background:#7c3aed}
+.prop-pick select{padding:6px 8px;border:1px solid rgba(0,0,0,.1);border-radius:6px;font-size:.88rem;background:#fff;cursor:pointer;font-family:inherit}
+.prop-pick select:focus{outline:2px solid currentColor;outline-offset:1px}
+</style>
+<form method="post" action="{{ route('dashboard.property') }}" id="propForm" class="prop-switch">
+@csrf
+<label class="prop-pick ga4">
+<span class="prop-lbl"><span class="dot"></span>Google Analytics 4</span>
+<select name="ga4_property_id" onchange="document.getElementById('propForm').submit()">
+<option value="">— not selected —</option>
+@foreach($properties as $p)
+<option value="{{ $p['id'] }}" @if($conn->ga4_property_id === $p['id']) selected @endif>{{ $p['name'] }}</option>
+@endforeach
+</select>
+</label>
+<label class="prop-pick gsc">
+<span class="prop-lbl"><span class="dot"></span>Search Console</span>
+<select name="gsc_site_url" onchange="document.getElementById('propForm').submit()">
+<option value="">— not selected —</option>
+@foreach($sites as $s)
+<option value="{{ $s['url'] }}" @if($conn->gsc_site_url === $s['url']) selected @endif>{{ $s['url'] }}</option>
+@endforeach
+</select>
+</label>
+</form>
 
 <div class="hero">
     <form method="post" action="{{ route('ask.start') }}">
@@ -260,12 +276,7 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 </div>
 @endif
 
-<p class="foot">Free pilot — no credit card. GA4 + Search Console joined. Plain English.<br>
-<a href="/about" style="color:#1a73e8;text-decoration:none;margin:0 6px">About</a> ·
-<a href="https://www.seokru.com/legal/privacy/" style="color:#1a73e8;text-decoration:none;margin:0 6px">Privacy Policy</a> ·
-<a href="https://www.seokru.com/legal/terms/" style="color:#1a73e8;text-decoration:none;margin:0 6px">Terms of Service</a> ·
-<a href="mailto:info@seokru.com" style="color:#1a73e8;text-decoration:none;margin:0 6px">info@seokru.com</a>
-</p>
+@include('partials.footer')
 
 </body>
 </html>

@@ -147,5 +147,6 @@ function syncSave(){
 document.getElementById('promptField').addEventListener('input', syncSave);
 syncSave();
 </script>
+@include('partials.footer')
 </body>
 </html>

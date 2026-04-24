@@ -58,5 +58,6 @@ button:hover{background:#1557b0}
 
 <button type="submit">Generate my report →</button>
 </form>
+@include('partials.footer')
 </body>
 </html>

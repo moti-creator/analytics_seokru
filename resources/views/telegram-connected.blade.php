@@ -24,5 +24,6 @@ h1{color:#1e8e3e;margin:.2em 0}
 @if(config('services.telegram.bot_username'))
 <a class="btn" href="https://t.me/{{ config('services.telegram.bot_username') }}">Open Telegram bot →</a>
 @endif
+@include('partials.footer')
 </body>
 </html>
