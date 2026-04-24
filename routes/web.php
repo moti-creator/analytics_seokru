@@ -12,6 +12,8 @@ Route::get('/', [ReportController::class, 'landing']);
 Route::view('/privacy', 'legal.privacy')->name('privacy');
 Route::view('/terms', 'legal.terms')->name('terms');
 Route::view('/about', 'legal.about')->name('about');
+Route::view('/legal/privacy', 'legal.privacy');
+Route::view('/legal/terms', 'legal.terms');
 Route::get('/start/{type}', [ReportController::class, 'start'])->name('start');
 Route::post('/ask/start', [ReportController::class, 'askStart'])->name('ask.start');
 
