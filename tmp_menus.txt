@@ -1,0 +1,44 @@
+
+=== About footer (menu=446) ===
+  id=3274 title='About' url=https://www.seokru.com/about/ parent=0
+  id=3273 title='Services' url=https://www.seokru.com/services/ parent=0
+  id=3279 title='עברית' url=https://he.seokru.com parent=0
+  id=3278 title='Contact us' url=https://www.seokru.com/contact-us/ parent=0
+
+=== Legal (menu=445) ===
+  id=3272 title='Legal' url=https://www.seokru.com/legal/ parent=0
+  id=2612 title='Terms' url=https://www.seokru.com/legal/terms/ parent=0
+  id=2613 title='Privacy' url=https://www.seokru.com/legal/privacy/ parent=0
+
+=== Use Cases (menu=447) ===
+  id=3280 title='AI Automations' url=https://www.seokru.com/services/ai/ parent=0
+  id=3281 title='Industry' url=https://www.seokru.com/services/ai/industry/ parent=0
+  id=3282 title='Onpage SEO' url=https://www.seokru.com/services/initial-onpage-seo/ parent=0
+
+=== SEOKRU Mega Menu (menu=448) ===
+  id=3629 title='Services' url=/services/ parent=0
+  id=3630 title='Industries' url=/services/ai/industry/ parent=0
+  id=3631 title='About' url=/about/ parent=0
+  id=3632 title='Contact Us' url=/contact-us/ parent=0
+  id=3645 title='On-Page SEO' url=/services/initial-onpage-seo/ parent=3629
+  id=3646 title='Monthly SEO' url=/services/monthly-seo-services/ parent=3629
+  id=3647 title='AI Automation' url=/services/ai/ parent=3629
+  id=3648 title='WhatsApp AI Agent' url=/services/ai/whatsapp-ai-agent/ parent=3629
+  id=3649 title='AI Optimization' url=/services/ai/ai-optimization/ parent=3629
+  id=3650 title='SEO Calculator' url=/seo-campaign-calculator/ parent=3629
+  id=3651 title='E-Commerce' url=/services/ai/industry/ai-automations-for-the-e-commerce-industry/ parent=3630
+  id=3652 title='Healthcare' url=/services/ai/industry/ai-automations-for-medical-clinics-and-healthcare/ parent=3630
+  id=3653 title='Real Estate' url=/services/ai/industry/ai-automations-for-the-real-estate-industry/ parent=3630
+  id=3654 title='Legal Services' url=/services/ai/industry/ai-automations-for-law-firms-and-legal-services/ parent=3630
+  id=3655 title='All Industries' url=/services/ai/industry/ parent=3630
+
+=== Main (menu=81) ===
+  id=1831 title='Home' url=https://www.seokru.com/ parent=0
+  id=2097 title='Services' url=# parent=0
+  id=2643 title='AI Optimization' url=https://www.seokru.com/services/ai/ai-optimization/ parent=2097
+  id=2697 title='WhatsApp AI Agent' url=https://www.seokru.com/services/ai/whatsapp-ai-agent/ parent=2097
+  id=1777 title='Initial Onpage SEO' url=https://www.seokru.com/services/initial-onpage-seo/ parent=2097
+  id=1776 title='Monthly SEO services' url=https://www.seokru.com/services/monthly-seo-services/ parent=2097
+  id=2927 title='AI Automations' url=/services/ai/ parent=2097
+  id=2303 title='Projects' url=https://www.seokru.com/#projects parent=0
+  id=2031 title='Contact us' url=https://www.seokru.com/contact-us/ parent=0

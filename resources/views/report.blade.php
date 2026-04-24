@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"><title>{{ $report->title ?? 'Report' }}</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
 <meta name="robots" content="noindex, nofollow, noarchive">
 <style>
 body{font-family:system-ui,Arial,sans-serif;max-width:820px;margin:40px auto;padding:20px;color:#222;line-height:1.6}

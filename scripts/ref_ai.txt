@@ -1,0 +1,63 @@
+[block id="3005"]
+
+<style>
+.skru-srv-grid-section{width:100%;max-width:1200px;margin:0 auto;padding:0 20px;box-sizing:border-box;}
+.skru-srv-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:20px;}
+@media(max-width:900px){.skru-srv-row{grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}}
+@media(max-width:580px){.skru-srv-row{grid-template-columns:1fr;gap:14px;margin-bottom:14px;}.skru-srv-grid-section{padding:0 14px;}}
+.skru-srv-card{background:rgba(255,255,255,.028);border:1px solid rgba(81,190,137,.13);border-radius:20px;padding:32px 28px;position:relative;overflow:hidden;transition:transform .55s cubic-bezier(.25,.46,.45,.94),border-color .55s ease-in-out,background .55s ease-in-out,box-shadow .55s ease-in-out;display:flex;flex-direction:column;text-align:left;}
+.skru-srv-card::after{content:'';position:absolute;top:0;left:-100%;width:55%;height:100%;background:linear-gradient(90deg,transparent,rgba(81,190,137,.045),transparent);transition:none;pointer-events:none;}
+.skru-srv-card:hover::after{animation:skru-card-glow .55s ease forwards;}
+.skru-srv-card:hover{transform:translateY(-8px) scale(1.025);border-color:rgba(81,190,137,.4);background:rgba(81,190,137,.036);box-shadow:0 28px 70px rgba(0,0,0,.5),0 0 0 1px rgba(81,190,137,.07);}
+.skru-srv-card-top{display:flex;align-items:center;justify-content:flex-start;gap:14px;margin-bottom:18px;}
+.skru-srv-icon-wrap{width:52px;height:52px;border-radius:14px;background:linear-gradient(135deg,rgba(81,190,137,.14),rgba(81,190,137,.04));border:1px solid rgba(81,190,137,.24);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .3s ease,border-color .3s ease,box-shadow .3s ease;}
+.skru-srv-card:hover .skru-srv-icon-wrap{background:linear-gradient(135deg,rgba(81,190,137,.26),rgba(81,190,137,.09));border-color:rgba(81,190,137,.48);box-shadow:0 4px 22px rgba(81,190,137,.22);}
+.skru-srv-title{font-size:1.32em;font-weight:800;color:#fff;margin:0;line-height:1.25;}
+.skru-srv-desc{color:rgba(255,255,255,.58);font-size:1.05em;line-height:1.76;margin-bottom:20px;flex-grow:1;}
+.skru-srv-links{list-style:none;padding:0;margin:0;border-top:1px solid rgba(255,255,255,.08);padding-top:16px;}
+.skru-srv-links li{margin-bottom:9px;}
+.skru-srv-links a{color:#51be89;text-decoration:none;font-size:1.01em;font-weight:600;display:flex;align-items:center;justify-content:flex-start;gap:7px;transition:color .2s ease,gap .2s ease;}
+.skru-srv-links a:hover{color:#b8f0d4;gap:12px;}
+.skru-srv-links a::before{content:"→";font-size:.88em;opacity:.75;}
+.skru-srv-tag{position:absolute;top:-11px;left:22px;background:linear-gradient(135deg,#51be89,#00693d);color:#fff;font-size:10px;font-weight:800;padding:3px 12px;border-radius:20px;letter-spacing:.06em;}
+.skru-section-label{text-align:left;margin-bottom:44px;}
+.skru-section-label h2{font-size:1.92em;font-weight:800;color:#fff;margin:0 0 8px;}
+.skru-section-label p{color:rgba(255,255,255,.45);font-size:.9em;margin:0;}
+.skru-section-divider{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(81,190,137,.25),transparent);margin:72px 0 62px;}
+.skru-ind-card{background:rgba(255,255,255,.028);border:1px solid rgba(81,190,137,.13);border-radius:20px;padding:28px 26px;position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.25,.46,.45,.94),border-color .5s ease,box-shadow .5s ease;display:flex;flex-direction:column;}
+.skru-ind-card:hover{transform:translateY(-6px);border-color:rgba(81,190,137,.38);box-shadow:0 24px 60px rgba(0,0,0,.45);}
+.skru-ind-tag-pill{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;background:rgba(81,190,137,.12);color:#51be89;border:1px solid rgba(81,190,137,.25);margin-bottom:14px;}
+.skru-ind-title{font-size:1.18em;font-weight:800;color:#fff;margin:0 0 10px;line-height:1.3;}
+.skru-ind-desc{color:rgba(255,255,255,.52);font-size:.97em;line-height:1.7;margin-bottom:18px;flex-grow:1;}
+.skru-ind-links{list-style:none;padding:0;margin:0;border-top:1px solid rgba(255,255,255,.07);padding-top:14px;}
+.skru-ind-links li{margin-bottom:8px;}
+.skru-ind-links a{color:#51be89;text-decoration:none;font-size:.97em;font-weight:600;display:flex;align-items:center;gap:6px;transition:color .2s,gap .2s;}
+.skru-ind-links a:hover{color:#b8f0d4;gap:10px;}
+.skru-ind-links a::before{content:"→";font-size:.84em;opacity:.7;}
+.skru-stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;max-width:1200px;margin:0 auto;padding:0 20px;}
+@media(max-width:800px){.skru-stats-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.skru-stats-grid{grid-template-columns:1fr;}}
+.skru-stat-card{background:rgba(255,255,255,.03);border:1px solid rgba(81,190,137,.14);border-radius:16px;padding:28px 22px;text-align:center;}
+.skru-stat-num{font-size:2.4em;font-weight:900;color:#51be89;line-height:1;}
+.skru-stat-label{color:rgba(255,255,255,.5);font-size:.88em;margin-top:8px;line-height:1.4;}
+@keyframes skru-card-glow{to{left:120%;}}
+</style>
+[section bg_color="#0d0d0d" dark="true" padding="80px 0"]
+
+[row style="collapse" width="full-width"]
+
+[col span__sm="12"]
+
+<div style="position:relative;overflow:hidden;direction:ltr;">
+<div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;"><div style="position:absolute;inset:0;background-image:linear-gradient(rgba(81,190,137,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(81,190,137,.022) 1px,transparent 1px);background-size:60px 60px;animation:skru-grid-scroll 22s linear infinite;"></div><div style="position:absolute;width:700px;height:700px;border-radius:50%;left:-220px;top:5%;background:radial-gradient(circle,rgba(81,190,137,.048) 0%,transparent 62%);animation:skru-orb-drift 13s ease-in-out infinite;"></div><div style="position:absolute;width:500px;height:500px;border-radius:50%;right:-130px;bottom:15%;background:radial-gradient(circle,rgba(81,190,137,.04) 0%,transparent 62%);animation:float-slow 11s ease-in-out infinite;"></div>
+</div>
+<div class="skru-srv-grid-section" style="position:relative;padding-top:0;padding-bottom:0;"><div class="skru-section-label">
+<h2>What We Build With AI</h2>
+<p>Nine categories of AI automation — from chatbots to custom agents, deployed in days.</p>
+</div><div class="skru-srv-row"><div class="skru-srv-card">
+<div class="skru-srv-card-top"><div class="skru-srv-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#51be89" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M12 11V7"/><circle cx="12" cy="5" r="2"/><path d="M8 15h.01M16 15h.01"/></svg></div><h3 class="skru-srv-title">AI Agents &amp; Chatbots</h3></div>
+<p class="skru-srv-desc">Deploy 24/7 AI agents on WhatsApp, web, and email that qualify leads, answer questions, and book meetings — without human intervention.</p>
+<ul class="skru-srv-links"><li><a href="/services/ai/ai-whatsapp-agent-for-small-business/">AI WhatsApp Agent for Small Business</a></li><li><a href="/services/ai/whatsapp-automation-lead-qualification/">Automated Lead Qualification</a></li><li><a href="/services/ai/intelligent-chatbot-integration-for-smbs/">Smart Chatbot Integration</a></li><li><a href="/services/ai/automated-customer-faq-systems/">Automated FAQ Systems</a></li></ul></div><div class="skru-srv-card">
+<div class="skru-srv-card-top"><div class="skru-srv-icon-wrap"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#51be89" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/><path d="M11 8v6M8 11h6"/></svg></div><h3 class="skru-srv-title">SEO &amp; Content Automation</h3></div>
+<p class="skru-srv-desc">AI that generates, optimizes, and publishes SEO content at scale — from keyword research to internal linking, fully automated.</p>
+<ul class="skru-srv-links"><li><a href="/services

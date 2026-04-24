@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <title>Connected — SEOKRU Analytics</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
 <style>
 body{font-family:system-ui,sans-serif;max-width:520px;margin:80px auto;padding:20px;text-align:center;color:#222;line-height:1.6}
 .check{font-size:4rem;margin-bottom:.2em}

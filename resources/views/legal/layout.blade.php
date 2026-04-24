@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <title>@yield('title', 'SEOKRU Analytics')</title>
 <meta name="description" content="@yield('description', 'SEOKRU Analytics — GA4 + Search Console in plain English.')">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
 <style>
 *{box-sizing:border-box}
 body{font-family:system-ui,sans-serif;max-width:760px;margin:0 auto;padding:20px;color:#222;line-height:1.65}
