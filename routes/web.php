@@ -31,6 +31,8 @@ Route::get('/generate/{type}', [ReportController::class, 'generateDirect'])->nam
 
 Route::get('/ask', [AskController::class, 'form'])->name('ask.form');
 Route::post('/ask', [AskController::class, 'run'])->name('ask.run');
+Route::get('/ask/clarify', [AskController::class, 'clarifyForm'])->name('ask.clarify');
+Route::post('/ask/clarify', [AskController::class, 'clarifySubmit'])->name('ask.clarify.submit');
 Route::post('/ask/saved', [AskController::class, 'saveQuery'])->name('ask.save');
 Route::delete('/ask/saved/{saved}', [AskController::class, 'deleteSaved'])->name('ask.saved.delete');
 

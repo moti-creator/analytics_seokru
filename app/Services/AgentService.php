@@ -54,6 +54,19 @@ class AgentService
             if ($parsed['type'] === 'tool_call') {
                 $fn = $parsed['name'];
                 $args = $parsed['args'];
+
+                // Agent wants to ask the user a clarifying question — bail out early.
+                if ($fn === 'ask_user') {
+                    return [
+                        'ask_user' => true,
+                        'question' => trim($args['question'] ?? 'Can you clarify?'),
+                        'original_prompt' => $userPrompt,
+                        'tool_calls' => $toolCalls,
+                        'iterations' => $i + 1,
+                        'backend' => $this->backend,
+                    ];
+                }
+
                 $result = $this->executeTool($fn, $args, $google);
 
                 $toolCalls[] = ['tool' => $fn, 'args' => $args, 'result_summary' => $this->summarize($result)];
@@ -336,6 +349,7 @@ Today is {$today}. Interpret relative dates like "last 7 days", "last 28 days", 
 - Use gsc_query for search queries, impressions, clicks, CTR, positions.
 - You MUST always call at least one tool before writing the final report. Never guess data.
 - You can (and should) call tools multiple times — especially for comparison questions.
+- If the question is GENUINELY ambiguous (missing time window, unclear metric, multiple plausible readings), call ask_user with ONE focused question. Don't use this for clear requests — just fetch the data. Default to reasonable assumptions (e.g. "recent" = last 28 days) rather than asking.
 
 # Answering patterns (follow these, don't skip)
 
@@ -442,6 +456,17 @@ PROMPT;
                 'name' => 'today_date',
                 'description' => 'Get today\'s date in YYYY-MM-DD. Use if unsure about relative dates.',
                 'parameters' => ['type' => 'object', 'properties' => (object)[]],
+            ],
+            [
+                'name' => 'ask_user',
+                'description' => 'Ask the user a short clarifying question when the request is genuinely ambiguous (missing time window, unclear metric, multiple plausible interpretations). Use sparingly — only if you cannot reasonably guess the intent. Do NOT use for simple/obvious questions; just fetch the data.',
+                'parameters' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'question' => ['type' => 'string', 'description' => 'A single clear question in plain English, max 200 chars. Offer 2-3 concrete options when possible.'],
+                    ],
+                    'required' => ['question'],
+                ],
             ],
         ];
     }
