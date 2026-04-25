@@ -9,26 +9,67 @@
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
 <style>
-body{font-family:system-ui,sans-serif;max-width:820px;margin:50px auto;padding:20px;color:#222;line-height:1.6}
-h1{margin-bottom:.2em}
-.sub{color:#666;margin-bottom:1.5em}
-label{display:block;margin:1em 0 .3em;font-weight:600;font-size:.95rem}
-select,textarea,input[type=text],button{width:100%;padding:12px;font-size:1rem;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;font-family:inherit}
-textarea{min-height:100px;resize:vertical}
-button.primary{background:#1a73e8;color:#fff;border:none;font-weight:600;cursor:pointer;margin-top:1.2em;font-size:1.05rem}
-button.primary:hover{background:#1557b0}
-button.primary:disabled{background:#888;cursor:wait}
-.muted{color:#888;font-size:.88rem}
-.flash{background:#e6f4ea;border-left:3px solid #1e8e3e;padding:10px 14px;margin:1em 0;border-radius:0 6px 6px 0}
+*{box-sizing:border-box}
+body{font-family:system-ui,sans-serif;max-width:860px;margin:30px auto;padding:20px;color:#222;line-height:1.55}
 
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:.5em 0 1em}
+/* topbar */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 0 14px;border-bottom:1px solid #eee;margin-bottom:1.5em}
+.brand{font-weight:700;color:#1a73e8;font-size:1.1rem;text-decoration:none}
+.email{color:#888;font-size:.85rem}
+.email a{color:#888}
+
+h1{margin:.2em 0 .2em;font-size:1.7rem}
+.sub{color:#666;margin-bottom:1.2em;font-size:.95rem}
+
+/* property selector — same colored cards as landing */
+.prop-switch{display:flex;gap:12px;align-items:stretch;margin-bottom:1.5em;flex-wrap:wrap}
+.prop-pick{flex:1;min-width:240px;display:flex;flex-direction:column;gap:6px;padding:12px 16px;border-radius:10px;border:2px solid transparent;transition:all .2s;cursor:pointer}
+.prop-pick.ga4{background:#eef3ff;border-color:#c7d7ff}
+.prop-pick.ga4:hover{background:#dce7ff;border-color:#1a73e8;box-shadow:0 4px 14px rgba(26,115,232,.18)}
+.prop-pick.gsc{background:#f3eaff;border-color:#d8b4ff}
+.prop-pick.gsc:hover{background:#ebdbff;border-color:#7c3aed;box-shadow:0 4px 14px rgba(124,58,237,.18)}
+.prop-lbl{font-size:.72rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.prop-pick.ga4 .prop-lbl{color:#1a73e8}
+.prop-pick.gsc .prop-lbl{color:#7c3aed}
+.prop-lbl .dot{width:8px;height:8px;border-radius:50%}
+.prop-pick.ga4 .dot{background:#1a73e8}
+.prop-pick.gsc .dot{background:#7c3aed}
+.prop-pick select{padding:8px 10px;border:1px solid rgba(0,0,0,.1);border-radius:6px;font-size:.9rem;background:#fff;cursor:pointer;font-family:inherit;width:100%}
+.prop-pick select:focus{outline:2px solid currentColor;outline-offset:1px}
+
+/* hero ask box */
+.ask-hero{background:linear-gradient(135deg,#f5f8ff 0%,#eef3ff 100%);border:1px solid #d8e4ff;border-radius:14px;padding:24px;margin-bottom:1.5em}
+.ask-hero label{display:block;font-weight:600;margin-bottom:8px;font-size:.95rem;color:#1a73e8}
+.ask-hero textarea{width:100%;min-height:110px;padding:14px;font-size:1.02rem;border:1px solid #cfd8e3;border-radius:10px;font-family:inherit;resize:vertical;background:#fff}
+.ask-hero textarea:focus{outline:none;border-color:#1a73e8;box-shadow:0 0 0 3px rgba(26,115,232,.12)}
+.ask-hero .examples{margin-top:10px}
+.ask-hero .examples-label{font-size:.78rem;color:#888;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;font-weight:600}
+.ask-hero .ex-chip{display:inline-block;background:#fff;border:1px solid #d8e4ff;color:#1a73e8;padding:6px 12px;border-radius:20px;font-size:.85rem;cursor:pointer;margin:3px 4px 3px 0;transition:all .2s}
+.ask-hero .ex-chip:hover{background:#1a73e8;color:#fff;border-color:#1a73e8}
+.ask-hero .row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;flex-wrap:wrap}
+.ask-hero .hint{color:#777;font-size:.85rem}
+.ask-hero button.primary{background:#1a73e8;color:#fff;border:0;padding:12px 28px;border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600;box-shadow:0 4px 14px rgba(26,115,232,.25);transition:all .2s}
+.ask-hero button.primary:hover{background:#1557b8;transform:translateY(-1px)}
+.ask-hero button.primary:disabled{background:#888;cursor:wait;transform:none}
+
+/* save row */
+.save-row{display:flex;gap:8px;margin-top:10px;align-items:center}
+.save-row input{flex:1;padding:10px;font-size:.9rem;border:1px solid #ddd;border-radius:6px;font-family:inherit}
+.save-row button{padding:10px 18px;background:#fff;color:#1a73e8;border:1px solid #1a73e8;cursor:pointer;font-size:.88rem;border-radius:6px;font-weight:600;white-space:nowrap}
+.save-row button:hover{background:#1a73e8;color:#fff}
+
+.flash{background:#e6f4ea;border-left:3px solid #1e8e3e;padding:10px 14px;margin:1em 0;border-radius:0 6px 6px 0;font-size:.9rem}
+
+/* sections below */
+.section{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:14px 18px;margin-bottom:1.2em}
+.section h3{margin:0 0 .6em;font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{background:#f0f7ff;color:#1a73e8;border:1px solid #d8e4ff;padding:6px 12px;border-radius:20px;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
 .chip:hover{background:#1a73e8;color:#fff}
 .chip .x{color:#c33;font-weight:700;margin-left:4px}
 .chip .x:hover{color:#fff}
 
-.section{background:#fafafa;border:1px solid #eee;border-radius:8px;padding:14px 18px;margin-bottom:1.2em}
-.section h3{margin:0 0 .6em;font-size:.95rem;color:#555;text-transform:uppercase;letter-spacing:.05em}
 .recent-item{display:grid;grid-template-columns:1fr auto auto;align-items:center;padding:10px 0;border-bottom:1px solid #eee;gap:10px}
 .recent-item:last-child{border-bottom:0}
 .recent-item a{color:#1a73e8;text-decoration:none;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -36,27 +77,80 @@ button.primary:disabled{background:#888;cursor:wait}
 .recent-item .date{color:#999;font-size:.8rem;white-space:nowrap}
 .recent-item .reuse{color:#666;font-size:.82rem;cursor:pointer;border:1px solid #ddd;padding:4px 12px;border-radius:4px;background:#fff;white-space:nowrap}
 .recent-item .reuse:hover{border-color:#1a73e8;color:#1a73e8}
-
-.save-row{display:flex;gap:8px;margin-top:10px}
-.save-row input{flex:1}
-.save-row button{width:auto;padding:8px 16px;background:#fff;color:#1a73e8;border:1px solid #1a73e8;cursor:pointer;font-size:.9rem}
-.save-row button:hover{background:#1a73e8;color:#fff}
-
-.examples{background:#f5f8ff;border-left:3px solid #1a73e8;padding:12px 16px;margin:1em 0;border-radius:0 6px 6px 0}
-.examples p{margin:.3em 0;font-size:.9rem;color:#444;cursor:pointer}
-.examples p:hover{color:#1a73e8;text-decoration:underline}
 </style>
 </head>
 <body>
+
+<div class="topbar">
+<a href="/" class="brand">SEOKRU Analytics</a>
+<span class="email">{{ $conn->email }} · <a href="/">← back</a></span>
+</div>
+
 <h1>Ask anything</h1>
-<p class="sub">Connected as <strong>{{ $conn->email }}</strong>. Describe the report you want in plain English.</p>
+<p class="sub">Plain-English question → GA4 + Search Console answer in &lt;60 seconds.</p>
 
 @if(session('status'))
 <div class="flash">{{ session('status') }}</div>
 @endif
 
+{{-- ====== Property selector (top, prominent) ====== --}}
+<form method="POST" action="{{ route('ask.run') }}" id="askForm" onsubmit="document.getElementById('sub').disabled=true;document.getElementById('sub').textContent='Thinking... (up to 60 sec)'">
+@csrf
+
+<div class="prop-switch">
+<label class="prop-pick ga4">
+<span class="prop-lbl"><span class="dot"></span>Google Analytics 4</span>
+<select name="ga4_property_id">
+<option value="">— None (GSC only) —</option>
+@foreach($properties as $p)
+<option value="{{ $p['id'] }}" @if($conn->ga4_property_id === $p['id']) selected @endif>{{ $p['name'] }}</option>
+@endforeach
+</select>
+</label>
+<label class="prop-pick gsc">
+<span class="prop-lbl"><span class="dot"></span>Search Console</span>
+<select name="gsc_site_url">
+<option value="">— None (GA4 only) —</option>
+@foreach($sites as $s)
+<option value="{{ $s['url'] }}" @if($conn->gsc_site_url === $s['url']) selected @endif>{{ $s['url'] }}</option>
+@endforeach
+</select>
+</label>
+</div>
+
+{{-- ====== Hero textarea (BEFORE recent questions) ====== --}}
+<div class="ask-hero">
+<label for="promptField">Your question</label>
+<textarea name="prompt" id="promptField" required placeholder="e.g. Top 5 pages with the biggest improvement in clicks last 28 days">{{ session('pending_prompt', '') }}</textarea>
+@php session()->forget('pending_prompt'); @endphp
+
+<div class="examples">
+<div class="examples-label">Try one of these:</div>
+<span class="ex-chip" onclick="fillPromptText(this)">Top 20 landing pages last 30 days with conversion rate</span>
+<span class="ex-chip" onclick="fillPromptText(this)">Search queries ranked 4-20 with the most impressions</span>
+<span class="ex-chip" onclick="fillPromptText(this)">Compare mobile vs desktop users last 7 days vs previous</span>
+<span class="ex-chip" onclick="fillPromptText(this)">Pages with traffic drop more than 30% vs last month</span>
+<span class="ex-chip" onclick="fillPromptText(this)">Top countries sending organic traffic last 28 days</span>
+</div>
+
+<div class="row">
+<span class="hint">Agent fetches GA4 + Search Console data, computes math, writes the answer.</span>
+<button id="sub" class="primary" type="submit">Generate report →</button>
+</div>
+</div>
+</form>
+
+{{-- ====== Save current as a saved query ====== --}}
+<form method="post" action="{{ route('ask.save') }}" class="save-row">
+@csrf
+<input type="hidden" name="prompt" id="savePrompt">
+<input type="text" name="label" maxlength="120" placeholder="Save current question as... (e.g. 'Weekly mobile check')">
+<button type="submit">★ Save</button>
+</form>
+
+{{-- ====== Saved queries (chips) ====== --}}
 @if(count($saved))
-<div class="section">
+<div class="section" style="margin-top:1.5em">
 <h3>★ Saved queries</h3>
 <div class="chips">
 @foreach($saved as $s)
@@ -71,6 +165,7 @@ button.primary:disabled{background:#888;cursor:wait}
 </div>
 @endif
 
+{{-- ====== Recent questions ====== --}}
 @if(count($recent))
 <div class="section">
 <h3>⟲ Recent questions</h3>
@@ -84,47 +179,6 @@ button.primary:disabled{background:#888;cursor:wait}
 </div>
 @endif
 
-<form method="POST" action="{{ route('ask.run') }}" id="askForm" onsubmit="document.getElementById('sub').disabled=true;document.getElementById('sub').textContent='Thinking... (up to 60 sec)'">
-@csrf
-
-<label>GA4 Property</label>
-<select name="ga4_property_id">
-<option value="">— None (GSC only) —</option>
-@foreach($properties as $p)
-<option value="{{ $p['id'] }}" @if($conn->ga4_property_id === $p['id']) selected @endif>{{ $p['name'] }}</option>
-@endforeach
-</select>
-
-<label>Search Console Site</label>
-<select name="gsc_site_url">
-<option value="">— None (GA4 only) —</option>
-@foreach($sites as $s)
-<option value="{{ $s['url'] }}" @if($conn->gsc_site_url === $s['url']) selected @endif>{{ $s['url'] }}</option>
-@endforeach
-</select>
-
-<label>Your question</label>
-<textarea name="prompt" id="promptField" required placeholder="e.g. Top landing pages last 7 days, sorted by sessions, with conversion rate">{{ session('pending_prompt', '') }}</textarea>
-@php session()->forget('pending_prompt'); @endphp
-
-<div class="examples">
-<p onclick="fillPromptText(this)">Top 20 landing pages last 30 days with sessions and conversion rate</p>
-<p onclick="fillPromptText(this)">Search queries ranked 4-20 with the most impressions last month</p>
-<p onclick="fillPromptText(this)">Compare mobile vs desktop users last 7 days vs previous 7 days</p>
-<p onclick="fillPromptText(this)">Which pages had traffic drop more than 30% vs last month</p>
-<p onclick="fillPromptText(this)">Top countries sending organic traffic last 28 days</p>
-</div>
-
-<button id="sub" class="primary" type="submit">Generate report</button>
-</form>
-
-<form method="post" action="{{ route('ask.save') }}" class="save-row">
-@csrf
-<input type="hidden" name="prompt" id="savePrompt">
-<input type="text" name="label" maxlength="120" placeholder="Save current question as... (e.g. 'Weekly mobile check')">
-<button type="submit">★ Save</button>
-</form>
-
 <script>
 function fillPromptText(el){
     document.getElementById('promptField').value = el.textContent.trim();
@@ -135,11 +189,13 @@ function fillPrompt(btn){
     document.getElementById('promptField').value = btn.dataset.prompt;
     syncSave();
     document.getElementById('promptField').focus();
+    window.scrollTo({top:0,behavior:'smooth'});
 }
 function fillFromChip(el){
     document.getElementById('promptField').value = el.dataset.prompt;
     syncSave();
     document.getElementById('promptField').focus();
+    window.scrollTo({top:0,behavior:'smooth'});
 }
 function syncSave(){
     document.getElementById('savePrompt').value = document.getElementById('promptField').value;
