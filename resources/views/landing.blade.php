@@ -169,15 +169,12 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 </label>
 </form>
 
-<div class="hero">
-    <form method="post" action="{{ route('ask.start') }}">
-    @csrf
-    <textarea name="prompt" placeholder="e.g. Which blog posts lost the most organic traffic last month, and why? Compare mobile vs desktop conversion. Show my top 10 keywords by impressions." required></textarea>
-    <div class="row">
-    <span class="hint">Agent pulls GA4 + Search Console data, computes the math, writes the answer.</span>
-    <button type="submit">Ask →</button>
+<div class="hero" style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+    <div>
+    <h2 style="margin:0 0 .2em;font-size:1.25rem;color:#1a73e8">Ask anything in plain English</h2>
+    <p style="margin:0;color:#555;font-size:.95rem">"Which posts lost traffic last month?" · "Top converting queries this week" · "Compare mobile vs desktop"</p>
     </div>
-    </form>
+    <a href="{{ route('ask.form') }}" style="background:#1a73e8;color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:600;font-size:1rem;white-space:nowrap;box-shadow:0 4px 14px rgba(26,115,232,.25)">Open Ask Mode →</a>
 </div>
 @endif
 
@@ -225,6 +222,12 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 <h3>Keyword Rankings — News</h3>
 <p>Same pivot, but only Top Stories / News tab results. See where you rank in Google News.</p>
 <span class="badge">Search Console · News</span>
+</a>
+
+<a class="card @if(!$conn || !$conn->ga4_property_id) card-gated @endif" href="{{ ($conn && $conn->ga4_property_id) ? route('generate.direct', 'llm_traffic') : '#' }}" style="border-color:#ff8a3d;background:linear-gradient(135deg,#fff7ed 0%,#fff 100%)">
+<h3 style="color:#ea580c">LLM Traffic <span style="font-size:.65rem;background:#ea580c;color:#fff;padding:2px 6px;border-radius:4px;margin-left:4px;vertical-align:middle">NEW</span></h3>
+<p>Visitors from ChatGPT, Perplexity, Claude, Gemini, Copilot &amp; more. How much, which AI, what pages.</p>
+<span class="badge" style="background:#ffedd5;color:#ea580c">GA4 · AI Referrals</span>
 </a>
 
 <a class="card @if($gated) card-gated @endif" href="{{ $gated ? '#' : route('generate.direct', 'content_decay') }}">

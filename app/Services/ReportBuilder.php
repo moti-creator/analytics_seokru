@@ -21,6 +21,7 @@ class ReportBuilder
         'converting_queries' => ['title' => 'Converting Queries You\'re Losing', 'needs' => ['ga4','gsc']],
         'cannibalization' => ['title' => 'Keyword Cannibalization Detector', 'needs' => ['ga4','gsc']],
         'brand_rescue' => ['title' => 'Brand Rescue vs Real Growth', 'needs' => ['ga4','gsc']],
+        'llm_traffic' => ['title' => 'LLM Traffic — Visitors from ChatGPT, Perplexity, Claude & Co.', 'needs' => ['ga4']],
     ];
 
     /** Types that render their own narrative and skip the LLM pipeline. */
@@ -67,6 +68,7 @@ class ReportBuilder
                 'converting_queries' => $this->convertingQueries($g),
                 'cannibalization' => $this->cannibalization($g),
                 'brand_rescue' => $this->brandRescue($g),
+                'llm_traffic' => $this->llmTraffic($g),
             };
             // Add source availability info so the LLM knows what data it has
             if ($check['missing']) {
@@ -571,6 +573,167 @@ class ReportBuilder
         return $out;
     }
 
+    /**
+     * LLM Traffic Report — detect referrals from AI chatbots/search.
+     * Pulls GA4 sessionSource × landingPage, filters known LLM domains,
+     * computes split, top landing pages, conversion if available.
+     */
+    protected function llmTraffic(GoogleService $g): array
+    {
+        $pid = $this->conn->ga4_property_id;
+        $curEnd = now()->subDay()->toDateString();
+        $curStart = now()->subDays(90)->toDateString();
+        $prevEnd = now()->subDays(91)->toDateString();
+        $prevStart = now()->subDays(180)->toDateString();
+
+        // Known LLM referrer host patterns. Match against sessionSource (GA4 source = host).
+        $llmMap = [
+            'ChatGPT' => ['chatgpt.com', 'chat.openai.com', 'openai.com'],
+            'Perplexity' => ['perplexity.ai', 'www.perplexity.ai'],
+            'Claude' => ['claude.ai', 'anthropic.com'],
+            'Gemini' => ['gemini.google.com', 'bard.google.com'],
+            'Copilot' => ['copilot.microsoft.com', 'edgeservices.bing.com'],
+            'Meta AI' => ['meta.ai'],
+            'Phind' => ['phind.com'],
+            'You.com' => ['you.com'],
+            'Poe' => ['poe.com'],
+            'Character.AI' => ['character.ai', 'beta.character.ai'],
+            'DuckDuckGo AI' => ['duckduckgo.com'],
+            'Mistral' => ['chat.mistral.ai'],
+            'Grok' => ['grok.com', 'x.ai'],
+        ];
+        $allHosts = array_merge(...array_values($llmMap));
+
+        $cur = $this->ga4SourceLanding($g, $pid, $curStart, $curEnd);
+        $prev = $this->ga4SourceLanding($g, $pid, $prevStart, $prevEnd);
+
+        $matchLlm = function (string $source) use ($llmMap): ?string {
+            $s = strtolower($source);
+            foreach ($llmMap as $name => $hosts) {
+                foreach ($hosts as $h) {
+                    if ($s === $h || str_contains($s, $h)) return $name;
+                }
+            }
+            return null;
+        };
+
+        // Aggregate current period
+        $perLlm = []; $perLanding = []; $totalSessions = 0; $totalLlmSessions = 0;
+        $totalUsers = 0; $totalLlmUsers = 0; $totalLlmConv = 0;
+        foreach ($cur as $r) {
+            $totalSessions += $r['sessions'];
+            $totalUsers += $r['users'];
+            $llm = $matchLlm($r['source']);
+            if (!$llm) continue;
+            $totalLlmSessions += $r['sessions'];
+            $totalLlmUsers += $r['users'];
+            $totalLlmConv += $r['conversions'];
+
+            $perLlm[$llm] ??= ['llm' => $llm, 'sessions' => 0, 'users' => 0, 'conversions' => 0];
+            $perLlm[$llm]['sessions'] += $r['sessions'];
+            $perLlm[$llm]['users'] += $r['users'];
+            $perLlm[$llm]['conversions'] += $r['conversions'];
+
+            $key = $llm . '|' . $r['page'];
+            $perLanding[$key] ??= ['llm' => $llm, 'page' => $r['page'], 'sessions' => 0, 'conversions' => 0];
+            $perLanding[$key]['sessions'] += $r['sessions'];
+            $perLanding[$key]['conversions'] += $r['conversions'];
+        }
+
+        // Previous period totals (for delta)
+        $prevLlmSessions = 0;
+        foreach ($prev as $r) {
+            if ($matchLlm($r['source'])) $prevLlmSessions += $r['sessions'];
+        }
+
+        // Sort + trim
+        usort($perLlm, fn($a, $b) => $b['sessions'] <=> $a['sessions']);
+        $perLlm = array_values($perLlm);
+        usort($perLanding, fn($a, $b) => $b['sessions'] <=> $a['sessions']);
+        $topLanding = array_values(array_slice($perLanding, 0, 25));
+
+        // GSC-side: query patterns suggestive of conversational/LLM-style searches (long, question-form)
+        $gscSignals = [];
+        if ($this->conn->gsc_site_url) {
+            try {
+                $gscUrl = 'https://www.googleapis.com/webmasters/v3/sites/' . urlencode($this->conn->gsc_site_url) . '/searchAnalytics/query';
+                $resp = Http::withToken($g->publicToken())->post($gscUrl, [
+                    'startDate' => $curStart, 'endDate' => $curEnd,
+                    'dimensions' => ['query'], 'rowLimit' => 1000,
+                ])->json();
+                $rows = $resp['rows'] ?? [];
+                foreach ($rows as $row) {
+                    $q = strtolower($row['keys'][0] ?? '');
+                    if (!$q) continue;
+                    $isLong = str_word_count($q) >= 6;
+                    $isQuestion = preg_match('/^(what|how|why|when|where|who|can|should|is|are|do|does|will)\b/', $q) === 1;
+                    if ($isLong || $isQuestion) {
+                        $gscSignals[] = [
+                            'query' => $q,
+                            'clicks' => (int)($row['clicks'] ?? 0),
+                            'impressions' => (int)($row['impressions'] ?? 0),
+                            'position' => round($row['position'] ?? 0, 1),
+                        ];
+                    }
+                }
+                usort($gscSignals, fn($a, $b) => $b['impressions'] <=> $a['impressions']);
+                $gscSignals = array_slice($gscSignals, 0, 20);
+            } catch (\Throwable $e) {}
+        }
+
+        return [
+            'period_current' => "$curStart to $curEnd",
+            'period_previous' => "$prevStart to $prevEnd",
+            'total_sessions_current' => $totalSessions,
+            'total_users_current' => $totalUsers,
+            'llm_totals' => [
+                'sessions_current' => $totalLlmSessions,
+                'sessions_previous' => $prevLlmSessions,
+                'sessions_delta' => $totalLlmSessions - $prevLlmSessions,
+                'sessions_pct_change' => $this->pct($totalLlmSessions, $prevLlmSessions),
+                'users_current' => $totalLlmUsers,
+                'conversions_current' => $totalLlmConv,
+                'share_of_total_pct' => $totalSessions > 0
+                    ? round(($totalLlmSessions / max(1, $totalSessions)) * 100, 2) : 0,
+            ],
+            'per_llm' => $perLlm,
+            'top_landing_pages' => $topLanding,
+            'gsc_conversational_query_signals' => $gscSignals,
+            'note' => $totalLlmSessions === 0
+                ? 'No detected LLM traffic in the last 90 days. Either AI tools have not yet driven referrals to this site, OR they pass referral data inconsistently. Bots from LLMs (e.g. GPTBot, ClaudeBot) crawl content but do not produce sessions in GA4 — only humans clicking links do.'
+                : null,
+        ];
+    }
+
+    /**
+     * GA4 query: sessionSource × landingPage with sessions, users, conversions.
+     */
+    protected function ga4SourceLanding(GoogleService $g, string $pid, string $start, string $end): array
+    {
+        $resp = Http::withToken($g->publicToken())->post(
+            "https://analyticsdata.googleapis.com/v1beta/properties/{$pid}:runReport",
+            [
+                'dateRanges' => [['startDate' => $start, 'endDate' => $end]],
+                'dimensions' => [['name' => 'sessionSource'], ['name' => 'landingPage']],
+                'metrics' => [
+                    ['name' => 'sessions'],
+                    ['name' => 'totalUsers'],
+                    ['name' => 'conversions'],
+                ],
+                'orderBys' => [['metric' => ['metricName' => 'sessions'], 'desc' => true]],
+                'limit' => 1000,
+            ]
+        )->json();
+
+        return collect($resp['rows'] ?? [])->map(fn ($r) => [
+            'source' => $r['dimensionValues'][0]['value'] ?? '',
+            'page' => $r['dimensionValues'][1]['value'] ?? '',
+            'sessions' => (int) ($r['metricValues'][0]['value'] ?? 0),
+            'users' => (int) ($r['metricValues'][1]['value'] ?? 0),
+            'conversions' => (int) ($r['metricValues'][2]['value'] ?? 0),
+        ])->all();
+    }
+
     protected function ga4LandingPages(GoogleService $g, string $pid, string $start, string $end): array
     {
         $resp = Http::withToken($g->publicToken())->post(
@@ -763,6 +926,7 @@ class ReportBuilder
             'converting_queries' => "Report: CONVERTING QUERIES YOU'RE LOSING (GA4+GSC join). These pages make the most money — did their Google ranking slip? Sections:\n<h2>Revenue pages at risk</h2> table: page, conversions, sessions, top query, position now, position 90d ago, rank change (positive = worse).\n<h2>Biggest slippers</h2> pages where rank dropped >2 positions. Name them, quantify the click loss risk.\n<h2>Recovery plan</h2> 3 concrete actions prioritized by revenue × rank-drop.",
             'cannibalization' => "Report: KEYWORD CANNIBALIZATION (GA4+GSC join). Queries where multiple of your URLs fight for the same spot. Sections:\n<h2>Top conflicts</h2> table: query, URLs competing (with positions, clicks, and GA4 conversions per URL).\n<h2>Which URL should win</h2> for each conflict — pick the winner based on which URL actually converts. Name the loser, explain why.\n<h2>Fix actions</h2> per conflict: merge, redirect, de-optimize, or internal-link strategy.",
             'brand_rescue' => "Report: BRAND RESCUE vs REAL GROWTH (GA4+GSC join). All pct_change values are pre-computed — quote them exactly. A 'verdict' field summarises the pattern. Sections:\n<h2>Headline</h2> state brand clicks pct_change vs non-brand clicks pct_change, using the exact numbers. Interpret the 'verdict' field (non_brand_decaying_brand_masking = call out the hidden decay; genuine_growth = celebrate; brand_decay_reputation_check = warn; stable_both = boring-week; mixed = nuanced).\n<h2>The real picture</h2> include conversions_current for brand vs non-brand landing pages. Explain which is driving revenue.\n<h2>What to do</h2> 3 actions tailored to the verdict.",
+            'llm_traffic' => "Report: LLM TRAFFIC. Detects visitors arriving from AI chatbots/search (ChatGPT, Perplexity, Claude, Gemini, Copilot, etc.). All numbers in 'llm_totals' and 'per_llm' are pre-computed — quote exactly. If 'note' is set, lead with it. Sections:\n<h2>Headline</h2> total LLM sessions current, share_of_total_pct of all sessions, sessions_pct_change vs previous period. Be honest if numbers are tiny — LLM referral traffic is still small for most sites.\n<h2>Which LLMs are sending traffic</h2> table from per_llm: LLM name, sessions, users, conversions. Sort by sessions desc.\n<h2>Top landing pages from LLM traffic</h2> table from top_landing_pages: LLM, page, sessions, conversions. Show top 10.\n<h2>Conversational queries in Search Console</h2> if 'gsc_conversational_query_signals' has rows, table top 10 (query, impressions, clicks, position). Caveat: these are NOT confirmed LLM-driven — they are long/question-form queries which correlate with AI-search behavior. Useful as a 2nd signal.\n<h2>What this means + what to do</h2> 3 specific recommendations (e.g. content optimised for citation, schema for AI Overviews, tracking via UTMs from any AI experiments). If LLM share is 0%, focus on llms.txt + content structure for AI crawlability.",
         };
     }
 
