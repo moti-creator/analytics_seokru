@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <title>SEOKRU Analytics — GA4 + Search Console in one plain-English report</title>
 <meta name="description" content="Ask any question about your site's traffic. We join Google Analytics 4 with Search Console data and answer in plain English. In 60 seconds.">
+<meta property="og:title" content="SEOKRU Analytics">
+<meta property="og:site_name" content="SEOKRU Analytics">
+<meta property="og:description" content="GA4 + Search Console in one plain-English report.">
+<meta property="og:url" content="https://analytics.seokru.com">
+<meta name="application-name" content="SEOKRU Analytics">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
@@ -94,7 +99,8 @@ h1{font-size:2rem;margin:.1em 0 .15em}
 </div>
 
 {{-- ============ HERO ============ --}}
-<h1>GA4 + Search Console in one plain-English report.</h1>
+<h1>SEOKRU Analytics</h1>
+<p class="sub" style="font-size:1.15rem;color:#444;margin-bottom:.4em"><strong>GA4 + Search Console in one plain-English report.</strong></p>
 <p class="sub">Ask any question. Or pick a preset. 60 seconds.</p>
 
 {{-- ============ STATE 1: NOT CONNECTED ============ --}}
